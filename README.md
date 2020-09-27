@@ -1,2 +1,2 @@
 # PNGCalendar
-Creates PNg Image of calendar of given year
+Creates PNG Image of calendar of given year
