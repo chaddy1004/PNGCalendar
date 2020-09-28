@@ -4,14 +4,14 @@ from PIL import ImageDraw
 
 
 def draw_blank_canvas(cell_dim):
-    ROWS = 6  # 6 rows: title row + row per 5 weeks in a month
+    ROWS = 7  # 6 rows: title row + row per max of 6 weeks in a month
     COLS = 7  # 7 days in a week
     canvas = np.ones((cell_dim * ROWS, cell_dim * COLS, 3)) * 255
     return canvas
 
 
 def draw_lines(canvas_img):
-    ROWS = 6  # 6 rows: title row + row per 5 weeks in a month
+    ROWS = 7  # 6 rows: title row + row per 5 weeks in a month
     COLS = 7  # 7 days in a week
 
     draw = ImageDraw.Draw(canvas_img)
