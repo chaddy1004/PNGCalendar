@@ -26,7 +26,7 @@ def draw_lines(canvas_img):
     return canvas_img
 
 
-def write_month_title(title, canvas_img, img_font):
+def write_month_title(title, canvas_img, img_font, fill):
     canvas_width = canvas_img.width
     cell_dim = canvas_width // 7
     text_width, text_height = img_font.getsize(title)
@@ -34,7 +34,7 @@ def write_month_title(title, canvas_img, img_font):
     height_start = cell_dim // 2 - text_height // 2
     start = (width_start, height_start)
     draw = ImageDraw.Draw(canvas_img)
-    draw.text(start, title, font=img_font, fill=(0, 0, 0))
+    draw.text(start, title, font=img_font, fill=fill)
     return canvas_img
 
 

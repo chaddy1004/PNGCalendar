@@ -13,23 +13,27 @@ Sunday == 6
 """
 
 
-def create_calendar(year, font_file, country, lang, draw_line):
+def create_calendar(year, font_file, country, lang, draw_line, white_text):
     config_dict = get_dict_from_yml("config.yml")
-    cell_dim = 150
+    cell_dim = 300
     date_util = DateUtil(country=country)
-    TITLE_FONT_SIZE = 100
+    TITLE_FONT_SIZE = 120
     title_font = ImageFont.truetype(font_file, TITLE_FONT_SIZE)
 
-    CELL_FONT_SIZE = 60
+    CELL_FONT_SIZE = 80
     cell_font = ImageFont.truetype(font_file, CELL_FONT_SIZE)
-
+    if white_text:
+        text_fill = (250, 250, 250)
+    else:
+        text_fill = (0, 0, 0)
     for m in range(1, 13):
+
         month_name = config_dict['language'][lang]['months'][m]
         canvas_np = draw_blank_canvas(cell_dim=cell_dim)
         canvas_img = Image.fromarray(canvas_np.astype('uint8'), 'RGB')
         if draw_line:
             canvas_img = draw_lines(canvas_img)
-        canvas_img = write_month_title(title=month_name, canvas_img=canvas_img, img_font=title_font)
+        canvas_img = write_month_title(title=month_name, canvas_img=canvas_img, img_font=title_font, fill=text_fill)
 
         draw = ImageDraw.Draw(canvas_img)
 
@@ -42,7 +46,7 @@ def create_calendar(year, font_file, country, lang, draw_line):
         for d in range(1, n_days + 1):
             date = datetime.datetime(year, m, d)
             weekday = date.weekday()
-            fill = (0, 0, 0)
+            fill = text_fill
             if weekday == 6 or date == date_util.is_holiday(date=(year, m, d)):  # If Sunday
                 # TODO: Write in red
                 fill = (255, 0, 0)
@@ -52,8 +56,8 @@ def create_calendar(year, font_file, country, lang, draw_line):
             cell_corner_x = weekdays.index(weekday) * cell_dim
             cell_corner_y = week * cell_dim
 
-            x = cell_corner_x +  cell_dim//2 - text_width // 2
-            y = cell_corner_y +  cell_dim//2 -  text_height // 2
+            x = cell_corner_x + cell_dim // 2 - text_width // 2
+            y = cell_corner_y + cell_dim // 2 - text_height // 2
             draw.text(xy=(x, y), text=date_text, font=cell_font, fill=fill)
             if weekday == 5:  # change to new row when saturday is hit
                 week += 1
@@ -65,7 +69,10 @@ def create_calendar(year, font_file, country, lang, draw_line):
         calendar_png_np = np.concatenate([calendar_done_np, transparency_mask], axis=-1)
         calendar_png_img = Image.fromarray(calendar_png_np, mode="RGBA")
 
-        calendar_png_img.save(f"saved_calendars/{m}_{month_name}_{year}_{country}_{lang}.png")
+        if white_text:
+            calendar_png_img.save(f"saved_calendars/{m}_{month_name}_{year}_{country}_{lang}_white.png")
+        else:
+            calendar_png_img.save(f"saved_calendars/{m}_{month_name}_{year}_{country}_{lang}_black.png")
 
     return
 
@@ -77,6 +84,7 @@ if __name__ == '__main__':
     ap.add_argument("--country", type=str, default="KR", help="two character country id string")
     ap.add_argument("--lang", type=str, default="EN", help="Korean: KR, English: EN, French: FR")
     ap.add_argument("--draw_line", action='store_true')
+    ap.add_argument("--white_text", action='store_true')
     args = vars(ap.parse_args())
 
     year = args["year"]
@@ -84,6 +92,9 @@ if __name__ == '__main__':
     country = args["country"]
     lang = args["lang"]
     draw_line = args["draw_line"]
+    white_text = args["white_text"]
+    white_text = True
 
     font_file = os.path.join("fonts", font)
-    create_calendar(year=year, font_file=font_file, country=country, lang=lang, draw_line=draw_line)
+    create_calendar(year=year, font_file=font_file, country=country, lang=lang, draw_line=draw_line,
+                    white_text=white_text)
